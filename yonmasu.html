@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>よんます</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDE7D8;
+    --card:#F7F3E8;
+    --ink:#2A2620;
+    --ink-soft:#6B6252;
+    --hairline:#D8CFB8;
+    --q1:#A8402C; --q1-bg:#F3E2DC;
+    --q2:#35604A; --q2-bg:#DFE7DC;
+    --q3:#35507A; --q3-bg:#DEE3EC;
+    --q4:#8B7355; --q4-bg:#E9E1D2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  header{
+    padding:28px 20px 18px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    border-bottom:1px solid var(--hairline);
+  }
+  h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:26px;
+    margin:0;
+    letter-spacing:.04em;
+  }
+  .sub{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  main{
+    padding:16px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    max-width:520px;
+    margin:0 auto;
+  }
+  .quad{
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:10px;
+    padding:12px 12px 10px;
+    display:flex;
+    flex-direction:column;
+    min-height:220px;
+  }
+  .quad-head{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin-bottom:10px;
+  }
+  .dot{
+    width:9px;height:9px;border-radius:2px;flex-shrink:0;
+  }
+  .quad[data-q="1"] .dot{background:var(--q1);}
+  .quad[data-q="2"] .dot{background:var(--q2);}
+  .quad[data-q="3"] .dot{background:var(--q3);}
+  .quad[data-q="4"] .dot{background:var(--q4);}
+  .qname{
+    font-size:14px;
+    font-weight:500;
+    outline:none;
+    border-bottom:1px dashed transparent;
+    padding-bottom:1px;
+  }
+  .qname:focus{border-bottom:1px dashed var(--ink-soft);}
+  .tasklist{
+    flex:1;
+    overflow-y:auto;
+    max-height:150px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    margin-bottom:8px;
+  }
+  .task{
+    display:flex;
+    align-items:flex-start;
+    gap:7px;
+    padding:5px 2px;
+    border-bottom:1px solid var(--hairline);
+  }
+  .task:last-child{border-bottom:none;}
+  .check{
+    width:15px;height:15px;
+    border:1.4px solid var(--ink-soft);
+    border-radius:3px;
+    flex-shrink:0;
+    margin-top:2px;
+    cursor:pointer;
+    position:relative;
+  }
+  .task.done .check{background:var(--ink-soft);border-color:var(--ink-soft);}
+  .task.done .check::after{
+    content:"";
+    position:absolute;left:3px;top:0px;width:4px;height:8px;
+    border-right:2px solid var(--card);border-bottom:2px solid var(--card);
+    transform:rotate(40deg);
+  }
+  .task-text{
+    flex:1;
+    font-size:13px;
+    line-height:1.5;
+    word-break:break-word;
+    cursor:default;
+  }
+  .task.done .task-text{
+    color:var(--ink-soft);
+    text-decoration:line-through;
+  }
+  .del{
+    font-size:12px;
+    color:var(--ink-soft);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:2px 3px;
+    flex-shrink:0;
+  }
+  .addrow{
+    display:flex;
+    gap:6px;
+  }
+  .addrow input{
+    flex:1;
+    font-family:inherit;
+    font-size:13px;
+    padding:6px 8px;
+    border:1px solid var(--hairline);
+    border-radius:6px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .addrow input:focus{
+    outline:none;
+    border-color:var(--ink-soft);
+  }
+  .addbtn{
+    font-family:inherit;
+    font-size:15px;
+    width:30px;
+    border:1px solid var(--hairline);
+    border-radius:6px;
+    background:#fff;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  .quad[data-q="1"] .addbtn{color:var(--q1);}
+  .quad[data-q="2"] .addbtn{color:var(--q2);}
+  .quad[data-q="3"] .addbtn{color:var(--q3);}
+  .quad[data-q="4"] .addbtn{color:var(--q4);}
+  .empty{
+    font-size:12px;
+    color:var(--ink-soft);
+    padding:6px 2px;
+  }
+  footer{
+    max-width:520px;
+    margin:8px auto 40px;
+    padding:0 20px;
+    font-size:11px;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>よんます</h1>
+    <div class="sub">四つに分けて、今やることを見る</div>
+  </div>
+</header>
+
+<main id="board"></main>
+
+<footer>
+  Safariの共有メニューから「ホーム画面に追加」すると、単体アプリのように開けます。データはこの端末のブラウザ内にのみ保存されます。
+</footer>
+
+<script>
+const STORAGE_KEY = 'yonmasu_state_v1';
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {
+    quadrants:[
+      {id:1,name:'今すぐ'},
+      {id:2,name:'大切'},
+      {id:3,name:'先に'},
+      {id:4,name:'いつか'}
+    ],
+    tasks:[]
+  };
+}
+
+let state = load();
+
+function save(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function uid(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+
+function render(){
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  state.quadrants.forEach(q=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'quad';
+    wrap.dataset.q = q.id;
+
+    const head = document.createElement('div');
+    head.className = 'quad-head';
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+    const name = document.createElement('span');
+    name.className = 'qname';
+    name.contentEditable = 'true';
+    name.textContent = q.name;
+    name.addEventListener('blur', ()=>{
+      const v = name.textContent.trim();
+      q.name = v.length ? v.slice(0,10) : q.name;
+      name.textContent = q.name;
+      save();
+    });
+    name.addEventListener('keydown', e=>{
+      if(e.key === 'Enter'){ e.preventDefault(); name.blur(); }
+    });
+    head.appendChild(dot);
+    head.appendChild(name);
+    wrap.appendChild(head);
+
+    const list = document.createElement('div');
+    list.className = 'tasklist';
+    const items = state.tasks.filter(t=>t.qid===q.id)
+      .sort((a,b)=> (a.done - b.done) || (a.order - b.order));
+
+    if(items.length === 0){
+      const e = document.createElement('div');
+      e.className = 'empty';
+      e.textContent = 'まだタスクがありません';
+      list.appendChild(e);
+    }
+
+    items.forEach(t=>{
+      const row = document.createElement('div');
+      row.className = 'task' + (t.done ? ' done' : '');
+      const check = document.createElement('div');
+      check.className = 'check';
+      check.addEventListener('click', ()=>{
+        t.done = !t.done;
+        save();
+        render();
+      });
+      const text = document.createElement('div');
+      text.className = 'task-text';
+      text.textContent = t.text;
+      const del = document.createElement('button');
+      del.className = 'del';
+      del.textContent = '×';
+      del.setAttribute('aria-label','削除');
+      del.addEventListener('click', ()=>{
+        state.tasks = state.tasks.filter(x=>x.id!==t.id);
+        save();
+        render();
+      });
+      row.appendChild(check);
+      row.appendChild(text);
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+    wrap.appendChild(list);
+
+    const addrow = document.createElement('div');
+    addrow.className = 'addrow';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = '入力して追加';
+    const btn = document.createElement('button');
+    btn.className = 'addbtn';
+    btn.textContent = '+';
+
+    function addTask(){
+      const v = input.value.trim();
+      if(!v) return;
+      const order = state.tasks.filter(x=>x.qid===q.id).length;
+      state.tasks.push({id:uid(), qid:q.id, text:v, done:false, order});
+      input.value = '';
+      save();
+      render();
+    }
+    btn.addEventListener('click', addTask);
+    input.addEventListener('keydown', e=>{
+      if(e.key === 'Enter') addTask();
+    });
+
+    addrow.appendChild(input);
+    addrow.appendChild(btn);
+    wrap.appendChild(addrow);
+
+    board.appendChild(wrap);
+  });
+}
+
+render();
+</script>
+</body>
+</html>
